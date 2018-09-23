@@ -11,3 +11,7 @@
 (require 'helm-config)
 (helm-mode t)
 (global-set-key (kbd "M-x") 'helm-M-x)
+
+;; company
+(require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
