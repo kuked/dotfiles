@@ -15,3 +15,6 @@
 ;; company
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
+
+;; ruby
+(require 'ruby-mode)
