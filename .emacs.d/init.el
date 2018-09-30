@@ -27,3 +27,6 @@
 ;; slime (roswell)
 (load (expand-file-name "~/.roswell/helper.el"))
 (setq inferior-lisp-program "ros -Q run")
+
+;; nord-theme
+(load-theme 'nord t)
