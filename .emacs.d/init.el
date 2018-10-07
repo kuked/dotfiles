@@ -51,3 +51,7 @@
 (require 'smartparens-config)
 (add-hook 'lisp-mode-hook #'smartparens-mode)
 (add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
+
+;; popwin
+(require 'popwin)
+(popwin-mode 1)
