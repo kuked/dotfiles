@@ -7,6 +7,21 @@
  '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
+;; turn off welcome screen
+(setq inhibit-startup-message t)
+
+;; disable the menu bar
+(menu-bar-mode -1)
+
+;; show column-number in mode line
+(column-number-mode t)
+
+;; turn on parentheses highlighting
+(show-paren-mode)
+
+;; no tabs
+(setq-default indent-tabs-mode nil)
+
 ;; helm
 (require 'helm-config)
 (helm-mode t)
