@@ -31,3 +31,8 @@
 
 ;; nord-theme
 (load-theme 'nord t)
+
+;; smartparens
+(require 'smartparens-config)
+(add-hook 'lisp-mode-hook #'smartparens-mode)
+(add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
