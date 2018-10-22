@@ -55,3 +55,7 @@
 ;; popwin
 (require 'popwin)
 (popwin-mode 1)
+
+;; lua-mode
+(require 'lua-mode)
+(add-hook 'lua-mode-hook #'smartparens-mode)
