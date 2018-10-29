@@ -39,6 +39,9 @@
 (require 'ruby-electric)
 (add-hook 'ruby-mode-hook '(lambda () (ruby-electric-mode t)))
 
+;; haml
+(require 'haml-mode)
+
 ;; slime
 (setq inferior-lisp-program "/usr/local/bin/sbcl")
 (require 'slime)
