@@ -52,8 +52,7 @@
 
 ;; smartparens
 (require 'smartparens-config)
-(add-hook 'lisp-mode-hook #'smartparens-mode)
-(add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
+(smartparens-global-mode)
 
 ;; popwin
 (require 'popwin)
@@ -61,4 +60,3 @@
 
 ;; lua-mode
 (require 'lua-mode)
-(add-hook 'lua-mode-hook #'smartparens-mode)
