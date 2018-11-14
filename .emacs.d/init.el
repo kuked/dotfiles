@@ -60,3 +60,8 @@
 
 ;; lua-mode
 (require 'lua-mode)
+
+;; c-mode
+(add-hook 'c-mode-hook
+          '(lambda()
+             (setq-default sp-escape-quotes-after-insert nil)))
