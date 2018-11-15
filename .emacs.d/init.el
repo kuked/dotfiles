@@ -65,3 +65,18 @@
 (add-hook 'c-mode-hook
           '(lambda()
              (setq-default sp-escape-quotes-after-insert nil)))
+
+;; whitespace
+(require 'whitespace)
+(setq whitespace-style '(face tabs trailing tab-mark))
+(setq whitespace-display-mappings
+      '((tab-mark ?\t [?\u00BB ?\t] [?\\ ?\t])))
+(set-face-attribute 'whitespace-trailing nil
+                    :foreground "RoyalBlue4"
+                    :background "RoyalBlue4"
+                    :underline nil)
+(set-face-attribute 'whitespace-tab nil
+                    :foreground "yellow4"
+                    :background "yellow4"
+                    :underline nil)
+(global-whitespace-mode t)
