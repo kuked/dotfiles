@@ -80,3 +80,9 @@
                     :background "yellow4"
                     :underline nil)
 (global-whitespace-mode t)
+
+
+;; python
+(require 'py-autopep8)
+(setq py-autopep8-options '("--max-line-length=150"))
+(add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
