@@ -89,3 +89,7 @@
 
 ;; slim
 (require 'slim-mode)
+
+;; open-junk-file
+(require 'open-junk-file)
+(global-set-key (kbd "C-x C-j") 'open-junk-file)
