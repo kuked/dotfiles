@@ -86,3 +86,6 @@
 (require 'py-autopep8)
 (setq py-autopep8-options '("--max-line-length=150"))
 (add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
+
+;; slim
+(require 'slim-mode)
