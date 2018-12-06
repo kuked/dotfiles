@@ -22,6 +22,12 @@
 ;; no tabs
 (setq-default indent-tabs-mode nil)
 
+;; バックアップとオートセーブファイルを~/.emacs.d/backupsに集める
+(add-to-list 'backup-directory-alist
+             (cons "." "~/.emacs.d/backups/"))
+(setq auto-save-file-name-transforms
+      `((".*" ,(expand-file-name "~/.emacs.d/backups/") t)))
+
 ;; helm
 (require 'helm-config)
 (helm-mode t)
