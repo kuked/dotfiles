@@ -105,3 +105,7 @@
 ;; open-junk-file
 (require 'open-junk-file)
 (global-set-key (kbd "C-x C-j") 'open-junk-file)
+
+;; lispxmp
+(require 'lispxmp)
+(define-key emacs-lisp-mode-map (kbd "C-c C-d") 'lispxmp)
