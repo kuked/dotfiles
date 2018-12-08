@@ -28,6 +28,9 @@
 (setq auto-save-file-name-transforms
       `((".*" ,(expand-file-name "~/.emacs.d/backups/") t)))
 
+;; C-SPCはスポットライトにわりあてているので
+(global-set-key (kbd "C-x C-m") 'set-mark-command)
+
 ;; helm
 (require 'helm-config)
 (helm-mode t)
