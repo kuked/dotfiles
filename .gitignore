@@ -4,3 +4,4 @@
 .emacs.d/elpa
 .emacs.d/network-security.data
 .emacs.d/recentf
+.emacs.d/package-selected-packages.el

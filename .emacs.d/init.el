@@ -31,6 +31,11 @@
 ;; C-SPCはスポットライトにわりあてているので
 (global-set-key (kbd "C-x C-m") 'set-mark-command)
 
+;; package-installするとinit.elが更新されるのがしんどい
+;; https://www.reddit.com/r/emacs/comments/4x655n/packageselectedpackages_always_appear_after/
+(setq custom-file "~/.emacs.d/package-selected-packages.el")
+(load custom-file)
+
 ;; helm
 (require 'helm-config)
 (helm-mode t)
