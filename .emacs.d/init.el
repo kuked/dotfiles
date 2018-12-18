@@ -36,6 +36,8 @@
 (setq custom-file "~/.emacs.d/package-selected-packages.el")
 (load custom-file)
 
+(require 's)
+
 ;; helm
 (require 'helm-config)
 (helm-mode t)
@@ -74,6 +76,29 @@
 
 ;; lua-mode
 (require 'lua-mode)
+(setq lua-indent-level 2)
+
+;; http://puntoblogspot.blogspot.com/2018/03/fixing-indentation-of-lua-busted-in.html
+(defun lua-busted-indentation-fix ()
+  (save-excursion
+    (lua-forward-line-skip-blanks 'back)
+    (let* ((current-indentation (current-indentation))
+           (line (thing-at-point 'line t))
+           (busted-p (s-matches?
+                      (rx (+ bol (* space)
+                             (or "context" "describe" "it" "setup" "teardown")
+                             "("))
+                      line)))
+          (when busted-p
+            (+ current-indentation lua-indent-level)))))
+
+(defun rgc-lua-calculate-indentation-override (old-function &rest arguments)
+  (or (lua-busted-indentation-fix)
+      (apply old-function arguments)))
+
+(advice-add #'lua-calculate-indentation-override
+            :around #'rgc-lua-calculate-indentation-override)
+
 
 ;; c-mode
 (add-hook 'c-mode-hook
