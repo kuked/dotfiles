@@ -116,10 +116,6 @@
                     :foreground "RoyalBlue4"
                     :background "RoyalBlue4"
                     :underline nil)
-(set-face-attribute 'whitespace-tab nil
-                    :foreground "yellow4"
-                    :background "yellow4"
-                    :underline nil)
 (global-whitespace-mode t)
 
 
@@ -148,3 +144,16 @@
 (add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode)
 (add-hook 'lisp-mode-hook 'enable-paredit-mode)
 (add-hook 'ielm-mode-hook 'enable-paredit-mode)
+
+;; go
+(add-to-list 'exec-path (expand-file-name "/Users/kuked/dev/bin/"))
+(require 'go-mode)
+(add-hook 'go-mode-hook
+          (lambda()
+            (setq c-basic-offset 4)
+            (setq tab-width 4)
+            (add-hook 'before-save-hook 'gofmt-before-save)
+            (local-set-key (kbd "M-.") 'godef-jump)
+            (set (make-local-variable 'company-backends) '(company-go))))
+
+(require 'company-go)
