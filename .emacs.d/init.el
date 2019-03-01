@@ -38,12 +38,11 @@
 
 (require 's)
 
-;; helm
-(require 'helm-config)
-(helm-mode t)
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-(global-set-key (kbd "C-x C-r") 'helm-recentf)
+;; ivy
+(ivy-mode 1)
+(counsel-mode 1)
+(global-set-key "\C-s" 'swiper)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
 
 ;; company
 (require 'company)
@@ -109,20 +108,14 @@
 
 ;; whitespace
 (require 'whitespace)
-(setq whitespace-style '(face tabs trailing tab-mark))
-(setq whitespace-display-mappings
-      '((tab-mark ?\t [?\u00BB ?\t] [?\\ ?\t])))
+(setq whitespace-style '(face tabs trailing))
+;; (setq whitespace-display-mappings
+;;       '((tab-mark ?\t [?\u00BB ?\t] [?\\ ?\t])))
 (set-face-attribute 'whitespace-trailing nil
                     :foreground "RoyalBlue4"
                     :background "RoyalBlue4"
                     :underline nil)
 (global-whitespace-mode t)
-
-
-;; python
-(require 'py-autopep8)
-(setq py-autopep8-options '("--max-line-length=150"))
-(add-hook 'python-mode-hook 'py-autopep8-enable-on-save)
 
 ;; slim
 (require 'slim-mode)
@@ -157,3 +150,17 @@
             (set (make-local-variable 'company-backends) '(company-go))))
 
 (require 'company-go)
+
+;; php
+(require 'php-mode)
+
+;; java
+(require 'meghanada)
+(add-hook 'java-mode-hook
+          (lambda ()
+            ;; meghanada-mode on
+            (meghanada-mode t)
+            (flycheck-mode +1)
+            (setq c-basic-offset 2)
+            ;; use code format
+            (add-hook 'before-save-hook 'meghanada-code-beautify-before-save)))

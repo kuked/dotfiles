@@ -5,3 +5,5 @@
 .emacs.d/network-security.data
 .emacs.d/recentf
 .emacs.d/package-selected-packages.el
+.emacs.d/backups
+.emacs.d/meghanada
