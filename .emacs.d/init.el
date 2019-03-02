@@ -38,11 +38,20 @@
 
 (require 's)
 
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-save-file "~/.emacs.d/.recentf")
+(setq recentf-max-saved-items 200)
+(setq recentf-exclude '(".recentf"))
+(setq recentf-auto-cleanup 'never)
+
 ;; ivy
 (ivy-mode 1)
+(setq ivy-height 15)
 (counsel-mode 1)
 (global-set-key "\C-s" 'swiper)
 (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "C-c C-r") 'counsel-recentf)
 
 ;; company
 (require 'company)
