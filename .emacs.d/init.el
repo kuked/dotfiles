@@ -40,9 +40,7 @@
 
 (require 'recentf)
 (recentf-mode 1)
-(setq recentf-save-file "~/.emacs.d/.recentf")
 (setq recentf-max-saved-items 200)
-(setq recentf-exclude '(".recentf"))
 (setq recentf-auto-cleanup 'never)
 
 ;; ivy
@@ -57,6 +55,11 @@
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 (setq company-idle-delay 0)
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "C-n") #'company-select-next)
+  (define-key company-active-map (kbd "C-p") #'company-select-previous))
 
 ;; ruby
 (require 'ruby-mode)
