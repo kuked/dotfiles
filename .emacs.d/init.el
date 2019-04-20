@@ -1,178 +1,119 @@
+(when (< emacs-major-version 23)
+  (defvar user-emacs-directory "~/.emacs.d/"))
+
+(defun add-to-load-path (&rest paths)
+  (let (path)
+    (dolist (path paths paths)
+      (let ((default-directory
+			  (expand-file-name (concat user-emacs-directory path))))
+		(add-to-list 'load-path default-directory)
+		(if (fboundp 'normal-top-level-add-subdirs-to-load-path)
+			(normal-top-level-add-subdirs-to-load-path))))))
+
+(add-to-load-path "elisp" "conf" "public_repos")
+
 (require 'package)
-(add-to-list
- 'package-archives
- '("marmalade" . "https://marmalade-repo.org/packages/"))
-(add-to-list
- 'package-archives
- '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
-;; turn off welcome screen
-(setq inhibit-startup-message t)
-
-;; disable the menu bar
-(menu-bar-mode -1)
-
-;; show column-number in mode line
-(column-number-mode t)
-
-;; turn on parentheses highlighting
-(show-paren-mode)
-
-;; no tabs
-(setq-default indent-tabs-mode nil)
-
-;; バックアップとオートセーブファイルを~/.emacs.d/backupsに集める
-(add-to-list 'backup-directory-alist
-             (cons "." "~/.emacs.d/backups/"))
-(setq auto-save-file-name-transforms
-      `((".*" ,(expand-file-name "~/.emacs.d/backups/") t)))
-
-;; C-SPCはスポットライトにわりあてているので
-(global-set-key (kbd "C-x C-m") 'set-mark-command)
-
-;; package-installするとinit.elが更新されるのがしんどい
-;; https://www.reddit.com/r/emacs/comments/4x655n/packageselectedpackages_always_appear_after/
-(setq custom-file "~/.emacs.d/package-selected-packages.el")
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(unless (file-exists-p custom-file)
+  (write-region "" nil custom-file))
 (load custom-file)
 
-(require 's)
+(setq backup-directory-alist `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
 
-(require 'recentf)
-(recentf-mode 1)
-(setq recentf-max-saved-items 200)
-(setq recentf-auto-cleanup 'never)
+(unless (eq window-system 'ns)
+  (menu-bar-mode 0))
 
-;; ivy
-(ivy-mode 1)
-(setq ivy-height 15)
-(counsel-mode 1)
-(global-set-key "\C-s" 'swiper)
-(global-set-key (kbd "C-x C-f") 'counsel-find-file)
-(global-set-key (kbd "C-c C-r") 'counsel-recentf)
+(column-number-mode t)
+(size-indication-mode t)
 
-;; company
-(require 'company)
-(add-hook 'after-init-hook 'global-company-mode)
-(setq company-idle-delay 0)
-(with-eval-after-load 'company
-  (define-key company-active-map (kbd "M-n") nil)
-  (define-key company-active-map (kbd "M-p") nil)
-  (define-key company-active-map (kbd "C-n") #'company-select-next)
-  (define-key company-active-map (kbd "C-p") #'company-select-previous))
+(global-set-key (kbd "C-m") 'newline-and-indent)
+(global-set-key (kbd "C-t") 'other-window)
+(global-set-key (kbd "C-x C-m") 'set-mark-command)
 
-;; ruby
-(require 'ruby-mode)
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
 
-;; ruby-electric
-(require 'ruby-electric)
-(add-hook 'ruby-mode-hook '(lambda () (ruby-electric-mode t)))
+(setq show-paren-delay 0)
+(show-paren-mode t)
+(setq show-paren-style 'parenthesis)
 
-;; haml
-(require 'haml-mode)
+(global-auto-revert-mode t)
 
-;; slime
-(setq inferior-lisp-program "/usr/local/bin/sbcl")
-(require 'slime)
-(setq slime-contribs '(slime-fancy))
-
-;; nord-theme
 (load-theme 'nord t)
 
-;; smartparens
-(require 'smartparens-config)
-(smartparens-global-mode)
-
-;; popwin
-(require 'popwin)
-(popwin-mode 1)
-
-;; lua-mode
-(require 'lua-mode)
-(setq lua-indent-level 2)
-
-;; http://puntoblogspot.blogspot.com/2018/03/fixing-indentation-of-lua-busted-in.html
-(defun lua-busted-indentation-fix ()
-  (save-excursion
-    (lua-forward-line-skip-blanks 'back)
-    (let* ((current-indentation (current-indentation))
-           (line (thing-at-point 'line t))
-           (busted-p (s-matches?
-                      (rx (+ bol (* space)
-                             (or "context" "describe" "it" "setup" "teardown")
-                             "("))
-                      line)))
-          (when busted-p
-            (+ current-indentation lua-indent-level)))))
-
-(defun rgc-lua-calculate-indentation-override (old-function &rest arguments)
-  (or (lua-busted-indentation-fix)
-      (apply old-function arguments)))
-
-(advice-add #'lua-calculate-indentation-override
-            :around #'rgc-lua-calculate-indentation-override)
-
-
-;; c-mode
-(add-hook 'c-mode-hook
-          '(lambda()
-             (setq-default sp-escape-quotes-after-insert nil)))
-
-;; whitespace
-(require 'whitespace)
-(setq whitespace-style '(face tabs trailing))
-;; (setq whitespace-display-mappings
-;;       '((tab-mark ?\t [?\u00BB ?\t] [?\\ ?\t])))
-(set-face-attribute 'whitespace-trailing nil
-                    :foreground "RoyalBlue4"
-                    :background "RoyalBlue4"
-                    :underline nil)
-(global-whitespace-mode t)
-
-;; slim
-(require 'slim-mode)
-
-;; yaml
-(require 'yaml-mode)
-
-;; open-junk-file
 (require 'open-junk-file)
-(global-set-key (kbd "C-x C-j") 'open-junk-file)
+(setq open-junk-file-format "~/txt/junk/%Y-%m%d-%H%M%S.")
+(global-set-key (kbd "C-c C-j") 'open-junk-file)
 
-;; lispxmp
 (require 'lispxmp)
 (define-key emacs-lisp-mode-map (kbd "C-c C-d") 'lispxmp)
 
-;; paredit
-(require 'paredit)
-(add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
-(add-hook 'lisp-interaction-mode-hook 'enable-paredit-mode)
-(add-hook 'lisp-mode-hook 'enable-paredit-mode)
-(add-hook 'ielm-mode-hook 'enable-paredit-mode)
+(require 'recentf)
+(setq recentf-save-file (concat user-emacs-directory ".recentf"))
+(setq recentf-max-saved-items 1000)
+(setq recentf-exclude '(".recentf"))
+(defmacro with-suppressed-message (&rest body)
+  "Suppress new messages temporarily in the echo erea and the `*Messages*' buffer while BODY is evaluated."
+  (declare (indent 0))
+  (let ((message-log-max nil))
+    `(with-temp-message (or (current-message) "") ,@body)))
+(run-with-idle-timer 30 t '(lambda ()
+                             (with-suppressed-message (recentf-save-list))))
+(require 'recentf-ext)
 
-;; go
-(add-to-list 'exec-path (expand-file-name "/Users/kuked/dev/bin/"))
+(require 'smartparens-config)
+(smartparens-global-mode t)
+
+(add-hook 'after-init-hook 'global-company-mode)
+(with-eval-after-load 'company
+  (setq company-idle-delay 0)
+  (define-key company-active-map (kbd "C-n") 'company-select-next)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous)
+  (define-key company-search-map (kbd "C-n") 'company-select-next)
+  (define-key company-search-map (kbd "C-p") 'company-select-previous))
+
+(ivy-mode t)
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
+(global-set-key (kbd "C-s") 'swiper-isearch)
+(counsel-mode t)
+(global-set-key (kbd "C-c C-r") 'counsel-recentf)
+
+(require 'yasnippet)
+
+(require 'lsp-mode)
+(setq lsp-clients-go-server-args
+      '("-format-style=gofmt"))
+
+(require 'lsp-ui)
+(add-hook 'lsp-mode-hook 'lsp-ui-mode)
+(setq lsp-ui-doc-enable nil)
+(setq lsp-ui-doc-header t)
+(setq lsp-ui-doc-include-signature t)
+(setq lsp-ui-sideline-enable nil)
+(require 'company-lsp)
+(push 'company-lsp company-backends)
+(setq company-lsp-cache-candidates t)
+
 (require 'go-mode)
-(add-hook 'go-mode-hook
-          (lambda()
-            (setq c-basic-offset 4)
-            (setq tab-width 4)
-            (add-hook 'before-save-hook 'gofmt-before-save)
-            (local-set-key (kbd "M-.") 'godef-jump)
-            (set (make-local-variable 'company-backends) '(company-go))))
+(add-hook 'go-mode-hook #'lsp)
+(defun go-before-save-hooks ()
+  (when (eq major-mode 'go-mode)
+    (lsp-format-buffer)))
+(add-hook 'before-save-hook 'go-before-save-hooks)
 
-(require 'company-go)
+(require 'golint)
 
-;; php
-(require 'php-mode)
+(require 'gotest)
+(setq go-test-verbose t)
+(define-key go-mode-map (kbd "C-C C-t") 'go-test-current-file)
 
-;; java
-(require 'meghanada)
-(add-hook 'java-mode-hook
-          (lambda ()
-            ;; meghanada-mode on
-            (meghanada-mode t)
-            (flycheck-mode +1)
-            (setq c-basic-offset 2)
-            ;; use code format
-            (add-hook 'before-save-hook 'meghanada-code-beautify-before-save)))
+(require 'ruby-mode)
+(add-hook 'ruby-mode-hook #'lsp)
+
+(add-hook 'c++-mode-hook #'lsp)
