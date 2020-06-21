@@ -104,6 +104,11 @@
 (setq rust-format-on-save t)
 
 
+;; ruby-electric
+(require 'ruby-electric)
+(add-hook 'ruby-mode-hook #'ruby-electric-mode)
+
+
 ;; global-set-keys
 (global-set-key (kbd "C-c C-r") 'counsel-recentf)
 (global-set-key (kbd "C-m") 'newline-and-indent)
