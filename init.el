@@ -66,6 +66,12 @@
 (smartparens-global-mode)
 
 
+;; popwin
+;; https://github.com/emacsorphanage/popwin
+(require 'popwin)
+(popwin-mode 1)
+
+
 ;; swiper
 ;; https://github.com/abo-abo/swiper
 (ivy-mode t)
