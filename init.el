@@ -128,3 +128,12 @@
   '(lambda ()
      (interactive)
      (insert (format-time-string "%H:%M %Y/%m/%d"))))
+
+(defun toggle-calendar ()
+  (interactive)
+  (if (get 'toggle-calendar 'state)
+      (progn (calendar-exit)
+             (put 'toggle-calendar 'state nil))
+      (progn (calendar)
+             (put 'toggle-calendar 'state t))))
+(global-set-key (kbd "<f7>") 'toggle-calendar)
