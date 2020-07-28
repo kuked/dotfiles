@@ -115,6 +115,18 @@
 (require 'ruby-electric)
 (add-hook 'ruby-mode-hook #'ruby-electric-mode)
 
+;; slime
+(setq inferior-lisp-program "sbcl")
+(slime-setup '(slime-fancy slime-company))
+
+;; original
+;; https://rion778.hatenablog.com/entry/20100926/1285488467
+(defun my-slime ()
+  (interactive)
+  (if (< (count-windows) 2)
+      (split-window-horizontally))
+  (slime)
+  (other-window 1))
 
 ;; global-set-keys
 (global-set-key (kbd "C-c C-r") 'counsel-recentf)
