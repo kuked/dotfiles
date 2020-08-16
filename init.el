@@ -128,6 +128,13 @@
   (slime)
   (other-window 1))
 
+
+;; dumb-jump
+;; https://github.com/jacktasia/dumb-jump
+;; M-.(go), M-,(back)
+(setq dumb-jump-mode t)
+
+
 ;; global-set-keys
 (global-set-key (kbd "C-c C-r") 'counsel-recentf)
 (global-set-key (kbd "C-m") 'newline-and-indent)
