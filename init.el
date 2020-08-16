@@ -132,7 +132,7 @@
 ;; dumb-jump
 ;; https://github.com/jacktasia/dumb-jump
 ;; M-.(go), M-,(back)
-(setq dumb-jump-mode t)
+(add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
 
 ;; global-set-keys
