@@ -17,6 +17,9 @@
 (setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
 
 
+(global-auto-revert-mode t)
+
+
 (unless (eq window-system 'ns) (menu-bar-mode 0))
 (column-number-mode t)
 (size-indication-mode t)
