@@ -1,161 +1,179 @@
-;; init.el
-
 (require 'package)
-(add-to-list 'package-archives '("marmalade" . "https://marmalade-repo.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives
+	     '("melpa-stable" . "http://stable.melpa.org/packages/"))
 (package-initialize)
 
+(unless package-archive-contents
+  (package-refresh-contents))
 
-;; https://ayatakesi.github.io/emacs/24.5/Saving-Customizations.html
-(setq custom-file (locate-user-emacs-file "custom.el"))
-(unless (file-exists-p custom-file)
-  (write-region "" nil custom-file))
-(load custom-file)
+(eval-when-compile (require 'use-package))
 
-
-(setq backup-directory-alist `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
+(use-package exec-path-from-shell)
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
 
 
-(global-auto-revert-mode t)
-
-
-(unless (eq window-system 'ns) (menu-bar-mode 0))
+(menu-bar-mode 0)
+(tool-bar-mode 0)
 (column-number-mode t)
 (size-indication-mode t)
-
+(when (eq system-type "darwin")
+  (setq mac-option-modifier 'meta))
 
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
+(setq mac-option-modifier 'meta)
+
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 
-;; nord-emacs
-;; https://github.com/arcticicestudio/nord-emacs
-(load-theme 'nord t)
+(use-package nord-theme
+  :config
+  (load-theme 'nord t))
+
+(use-package smartparens-config
+  :init
+  (smartparens-global-mode))
 
 
-;; company
-;; http://company-mode.github.io
-(add-hook 'after-init-hook 'global-company-mode)
-(with-eval-after-load 'company
-  (setq company-idle-delay 0)
-  (define-key company-active-map (kbd "C-n") 'company-select-next)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous)
-  (define-key company-search-map (kbd "C-n") 'company-select-next)
-  (define-key company-search-map (kbd "C-p") 'company-select-previous))
+(use-package recentf
+  :init
+  (setq recentf-save-file (concat user-emacs-directory ".recentf"))
+  (setq recentf-max-saved-items 1000)
+  (setq recentf-exclude '(".recentf"))
+  :config
+  (use-package recentf-ext))
 
-
-;; recentf
-;; https://qiita.com/blue0513/items/c0dc35a880170997c3f5
-(require 'recentf)
-(setq recentf-save-file (concat user-emacs-directory ".recentf"))
-(setq recentf-max-saved-items 1000)
-(setq recentf-exclude '(".recentf"))
 (defmacro with-suppressed-message (&rest body)
   (declare (indent 0))
   (let ((message-log-max nil))
     `(with-temp-message (or (current-message) "") ,@body)))
+
 (run-with-idle-timer 30 t '(lambda ()
                              (with-suppressed-message (recentf-save-list))))
 
-;; recentf-ext
-;; https://github.com/rubikitch/recentf-ext
-(require 'recentf-ext)
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
 
-
-;; smartparens
-;; https://github.com/Fuco1/smartparens
-(require 'smartparens-config)
-(smartparens-global-mode)
-
-
-;; popwin
-;; https://github.com/emacsorphanage/popwin
-(require 'popwin)
-(popwin-mode 1)
-
-
-;; swiper
-;; https://github.com/abo-abo/swiper
-(ivy-mode t)
-(setq ivy-use-virtual-buffers t)
-(setq enable-recursive-minibuffers t)
-
-
-;; flycheck
-(setq flycheck-highlighting-mode 'nil)
-(setq-default flycheck-indication-mode 'left-margin)
-(add-hook 'flycheck-mode-hook #'flycheck-set-indication-mode)
-(defun my/set-flycheck-margins ()
-  (setq left-fringe-width 8 right-fringe-width 8
-        left-margin-width 1 right-margin-width 0)
-  (flycheck-refresh-fringes-and-margins))
-(add-hook 'flycheck-mode-hook #'my/set-flycheck-margins)
-(setq flycheck-display-errors-delay 0.3)
-
-
-;; python
-(add-hook 'python-mode-hook #'lsp)
-(add-hook 'python-mode-hook #'flycheck-mode)
-
-
-;; py-yapf
-;; https://github.com/paetzke/py-yapf.el
-(require 'py-yapf)
-(add-hook 'python-mode-hook 'py-yapf-enable-on-save)
-
-
-;; rust
-(require 'rust-mode)
-(add-hook 'rust-mode-hook (lambda () (setq indent-tabs-mode nil)))
-(add-hook 'rust-mode-hook #'lsp)
-(add-hook 'rust-mode-hook #'flycheck-mode)
-(setq rust-format-on-save t)
-(define-key rust-mode-map (kbd "C-c C-c") 'rust-run)
-
-
-;; ruby-electric
-(require 'ruby-electric)
-(add-hook 'ruby-mode-hook #'ruby-electric-mode)
-
-;; slime
-(setq inferior-lisp-program "sbcl")
-(slime-setup '(slime-fancy slime-company))
-
-;; original
-;; https://rion778.hatenablog.com/entry/20100926/1285488467
-(defun my-slime ()
-  (interactive)
-  (if (< (count-windows) 2)
-      (split-window-horizontally))
-  (slime)
-  (other-window 1))
 
 
 ;; dumb-jump
-;; https://github.com/jacktasia/dumb-jump
 ;; M-.(go), M-,(back)
 (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
 
 
-;; global-set-keys
-(global-set-key (kbd "C-c C-r") 'counsel-recentf)
-(global-set-key (kbd "C-m") 'newline-and-indent)
-(global-set-key (kbd "C-s") 'swiper-isearch)
-(global-set-key (kbd "C-t") 'other-window)
-(global-set-key (kbd "C-x C-m") 'set-mark-command)
-(global-set-key (kbd "C-<tab>") 'dabbrev-expand)
-(define-key minibuffer-local-map (kbd "C-<tab>") 'dabbrev-expand)
-(define-key global-map (kbd "<f5>")
-  '(lambda ()
-     (interactive)
-     (insert (format-time-string "%H:%M %Y/%m/%d"))))
+(add-hook 'c-mode-hook '(lambda ()
+                          (setq c-basic-offset 4)))
+
+(use-package ruby-mode
+  :commands ruby-mode
+  :mode (("\\.rb$"    . ruby-mode)
+         ("Gemfile$"  . ruby-mode)
+         ("Rakefile$" . ruby-mode)))
+
+
+(use-package company
+  :init
+  (global-company-mode)
+  (setq company-idle-delay 0)
+  :bind
+  (:map company-active-map
+	("C-n" . company-select-next)
+	("C-p" . company-select-previous))
+  (:map company-search-map
+	("C-n" . company-select-next)
+	("C-p" . company-select-previous)))
+
+
+(use-package ivy
+  :diminish ivy-mode
+  :config
+  (ivy-mode t)
+  (counsel-mode 1)
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t)
+  (setq search-default-mode #'char-fold-to-regexp)
+  :bind
+  ("C-c C-r" . counsel-recentf)
+  ("C-s"     . swiper)
+  ("C-x C-f" . counsel-find-file)
+  ("M-x"     . counsel-M-x))
+
+
+(use-package popwin
+  :init (popwin-mode 1))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; #rust
+
+(use-package rust-mode
+  :ensure t
+  :custom rust-format-on-save t)
+
+(use-package cargo
+  :ensure t
+  :hook (rust-mode . cargo-minor-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; #elm
+
+(use-package elm-mode
+  :ensure t
+  :hook (elm-mode . elm-format-on-save-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package lsp-mode
+  :init (yas-global-mode)
+  :hook ((ruby-mode . lsp)
+         (rust-mode . lsp))
+  :bind ("C-c h" . lsp-describe-thing-at-point)
+  :commands lsp
+  :custom  ((lsp-enable-indentation nil)
+            (lsp-rust-server 'rust-analyzer)))
+
+(use-package lsp-ui
+  :ensure t)
+
+(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+
+
+(bind-key "C-m"     'newline-and-indent)
+(bind-key "C-x C-m" 'set-mark-command)
+(bind-key [f12] 'toggle-frame-fullscreen)
+
+;; https://gist.github.com/lateau/5260613
+(defun dont-kill-emacs()
+  "Disable \\[kill-emacs] binding execute."
+  (interactive)
+  (error (substitute-command-keys "To exit emacs: \\[kill-emacs]")))
+(global-set-key (kbd "C-x C-c") 'dont-kill-emacs)
 
 (defun toggle-calendar ()
+  "Toggle calendar display/hide."
   (interactive)
   (if (get 'toggle-calendar 'state)
-      (progn (calendar-exit)
-             (put 'toggle-calendar 'state nil))
-      (progn (calendar)
-             (put 'toggle-calendar 'state t))))
+      (progn (calendar-exit) (put 'toggle-calendar 'state nil))
+      (progn (calendar) (put 'toggle-calendar 'state t))))
 (global-set-key (kbd "<f7>") 'toggle-calendar)
+
+(bind-key [f5] '(lambda ()
+                  (interactive)
+                  (insert (format-time-string "%Y-%m-%d"))))
+
+(defun sunny ()
+  (interactive)
+  (insert "☀️"))
+
+
+;; change custom file location
+(setq custom-file (locate-user-emacs-file "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
