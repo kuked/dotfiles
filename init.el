@@ -77,6 +77,8 @@
          ("Gemfile$"  . ruby-mode)
          ("Rakefile$" . ruby-mode)))
 
+(use-package haml-mode)
+
 
 (use-package company
   :init
