@@ -12,6 +12,7 @@
 (when (memq window-system '(mac ns))
   (exec-path-from-shell-initialize))
 
+(set-language-environment "Japanese")
 
 (menu-bar-mode 0)
 (tool-bar-mode 0)
