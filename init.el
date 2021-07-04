@@ -1,6 +1,6 @@
 (require 'package)
 (add-to-list 'package-archives
-	     '("melpa-stable" . "http://stable.melpa.org/packages/"))
+             '("melpa.stable" . "http://stable-melpa.org/packages/"))
 (package-initialize)
 
 (unless package-archive-contents
@@ -8,9 +8,10 @@
 
 (eval-when-compile (require 'use-package))
 
-(use-package exec-path-from-shell)
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+(use-package exec-path-from-shell
+  :config
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize)))
 
 (set-language-environment "Japanese")
 
@@ -18,6 +19,7 @@
 (tool-bar-mode 0)
 (column-number-mode t)
 (size-indication-mode t)
+(setq ring-bell-function 'ignore)
 (when (eq system-type "darwin")
   (setq mac-option-modifier 'meta))
 
@@ -60,7 +62,6 @@
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
-
 
 
 ;; dumb-jump
@@ -109,7 +110,9 @@
 
 
 (use-package popwin
-  :init (popwin-mode 1))
+  :init
+  (popwin-mode 1)
+  (push '("*Cargo Run*") popwin:special-display-config))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; #rust
@@ -139,14 +142,11 @@
          (rust-mode . lsp))
   :bind ("C-c h" . lsp-describe-thing-at-point)
   :commands lsp
-  :custom  ((lsp-enable-indentation nil)
-            (lsp-rust-server 'rust-analyzer)))
-
+  :custom (lsp-rust-server 'rust-analyzer))
 (use-package lsp-ui
   :ensure t)
 
 (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-
 
 (bind-key "C-m"     'newline-and-indent)
 (bind-key "C-x C-m" 'set-mark-command)
