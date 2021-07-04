@@ -1,4 +1,12 @@
+;;; init.el --- My init.el  -*- lexical-binding: t; -*-
+
+;;; Commentary:
+
+;; My init.el.
+
 (require 'package)
+
+;;; Code:
 (add-to-list 'package-archives
              '("melpa.stable" . "http://stable-melpa.org/packages/"))
 (package-initialize)
@@ -52,6 +60,7 @@
   (use-package recentf-ext))
 
 (defmacro with-suppressed-message (&rest body)
+  "Suppress new messages temporarily in the echo area and the `*Messages*' buffer while BODY is evaluated."
   (declare (indent 0))
   (let ((message-log-max nil))
     `(with-temp-message (or (current-message) "") ,@body)))
@@ -159,19 +168,19 @@
   (error (substitute-command-keys "To exit emacs: \\[kill-emacs]")))
 (global-set-key (kbd "C-x C-c") 'dont-kill-emacs)
 
-(defun toggle-calendar ()
-  "Toggle calendar display/hide."
-  (interactive)
-  (if (get 'toggle-calendar 'state)
-      (progn (calendar-exit) (put 'toggle-calendar 'state nil))
-      (progn (calendar) (put 'toggle-calendar 'state t))))
-(global-set-key (kbd "<f7>") 'toggle-calendar)
+
+(use-package calendar
+  :commands calendar
+  :bind (("<f7>" . calendar)
+         :map calendar-mode-map
+         ("<f7>" . calendar-exit)))
 
 (bind-key [f5] '(lambda ()
                   (interactive)
                   (insert (format-time-string "%Y-%m-%d"))))
 
 (defun sunny ()
+  "Insert ☀️ at point."
   (interactive)
   (insert "☀️"))
 
@@ -180,3 +189,8 @@
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file))
+
+
+(provide 'init)
+
+;;; init.el ends here
